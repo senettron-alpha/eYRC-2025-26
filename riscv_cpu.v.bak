@@ -1,0 +1,34 @@
+
+// riscv_cpu.v - single-cycle RISC-V CPU Processor
+
+module riscv_cpu (
+    input         clk, reset,
+    output [31:0] PC,
+    input  [31:0] Instr,
+    output        MemWrite,
+    output [31:0] Mem_WrAddr, Mem_WrData,
+    input  [31:0] ReadData,
+    output [31:0] Result,
+    output [3:0]  ByteEn
+);
+
+wire        ALUSrc, RegWrite, Jump, Zero, PCSrc;
+wire [1:0]  ResultSrc, ImmSrc;
+wire [2:0]  ALUControl;
+wire [31:0] SrcA_DP, WriteData_DP;
+wire [1:0]  AddrOffset;
+
+datapath    dp  (clk, reset, ResultSrc, PCSrc,
+                ALUSrc, RegWrite, ImmSrc, ALUControl,
+                Zero, PC, Instr, Mem_WrAddr, Mem_WrData, ReadData, Result,
+                ByteEn, AddrOffset, SrcA_DP, WriteData_DP);
+
+controller  c   (Instr[6:0], Instr[14:12], Instr[30], Zero,
+                SrcA_DP, WriteData_DP,
+                ResultSrc, MemWrite, PCSrc, ALUSrc, RegWrite, Jump,
+                ImmSrc, ALUControl);
+
+endmodule
+
+endmodule
+
